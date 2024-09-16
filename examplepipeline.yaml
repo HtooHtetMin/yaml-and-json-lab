@@ -1,0 +1,36 @@
+definitions:
+  steps:
+    - step: &build-test
+        name: Build and &build-test
+        script:
+          - mvn package
+        artifacts:
+          -target/**
+
+  database: &database 
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root 
+      MYSQL_DATABASE: test 
+      MYSQL_USER: test 
+      MYSQL_PASSWORD: test 
+
+pipelines:
+  branches:
+    develop: 
+      - step: 
+        <<: *build-test
+      - step: 
+          name: Deploy to dev 
+          deployement: dev 
+          script:
+            - echo "Deploying to dev"
+
+master:
+  - step: *build-test
+  - step:
+      name: Deploy to prod 
+      deployement: production 
+      script:
+        - echo "Deploying to prod"
+
